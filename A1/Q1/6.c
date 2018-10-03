@@ -30,12 +30,11 @@ void checkInputs(int *num_children, int *num_tasks, int *task_per_child){
 	
 }
 
-int makeTree(int children_count, int num_children, int task_per_child, int num_tasks){
+int makeTree(int children_count, int child_id, int num_children, int start, int task_per_child, int num_tasks){
 
+	int this_child_id;
 	
-
 	if(children_count < num_children){
-		// int curr_task = 0;
 		
 		pid_t pid;
 		pid = fork();
@@ -46,21 +45,27 @@ int makeTree(int children_count, int num_children, int task_per_child, int num_t
 
 		else if (pid == 0) // child
 		{	
+			
 			children_count+=1;
-			int curr_task = makeTree(children_count, num_children, task_per_child, num_tasks);
-			wait(NULL);
-			curr_task+=task_per_child;
-			printf("CHILD %d and %d completed\n", (num_children-children_count+1));
-			return curr_task;
+			this_child_id = makeTree(children_count, child_id, num_children, start, task_per_child, num_tasks);
+			
+			if (this_child_id<0){
+				return -1;
+			}
+
+			this_child_id+=1;
+			printf("CHILD %d %d\n", children_count, this_child_id);
 			exit(0);
 		}
 		else
 		{	
 			wait(NULL);
+			printf("PARENT tasks done %d\n", this_child_id); 
+			return this_child_id;
 		}
 	}
 
-	// return curr_task;
+	// return 0;
 
 }
 
@@ -78,14 +83,15 @@ int main() {
 	checkInputs(&num_children, &num_tasks, &task_per_child);
 	printf("Start distributing %d task(s) to %d child process(es)\n", num_tasks, num_children);
 
-	int curr_task = 0;
-	
+	int start = 1;
+
 	for (int i=0; i<= (num_tasks / (task_per_child*num_children)); i++){
 
 		int children_count = 0;
-		curr_task = makeTree(children_count, num_children, task_per_child, num_tasks);
-		wait(NULL);
-
+		int child_id = 0;
+		makeTree(children_count, child_id, num_children, start, task_per_child, num_tasks);
+		// wait(NULL);
+		start+=(task_per_child*num_children);
 		printf("----------------%d---------------\n",i+1);
 	}
 
