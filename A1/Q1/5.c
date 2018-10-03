@@ -99,9 +99,10 @@ int main() {
 		}
 		makeTree(children_count, num_children, start, task_per_child, num_tasks);
 		// wait(NULL);
-		printf("|||||||||||||------%d-----|||||||||||||\n",i+1);
+		// printf("|||||||||||||------%d-----|||||||||||||\n",i+1);
 	}
 
+	printf("The END!\n");
 	return 0;
 
 }
