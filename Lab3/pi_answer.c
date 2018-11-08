@@ -49,10 +49,9 @@ int main(int argc, char **argv) {
 	long long limit = atoll(argv[1]);
 	int NUM_THREADS = atoi(argv[2]);
 	
-	// long long limit =  500000000;
-	// int NUM_THREADS = 5;
+	printf("pi with %lld steps:\n", limit);
 
-	printf("Using %d threads to calculate pi with %lld iterations.\n", NUM_THREADS, limit);
+	// printf("Using %d threads to calculate pi with %lld iterations.\n", NUM_THREADS, limit);
 	pthread_t thr[NUM_THREADS];
 	int i, rc;
 	thread_data_t thr_data[NUM_THREADS];
@@ -78,7 +77,7 @@ int main(int argc, char **argv) {
 	}
 
 	timer = omp_get_wtime() - timer;
-	printf("steps : %lld, pi is : %lf, time use: %f\n", limit, sum, timer); 
+	printf("\tthreads : %d, pi is : %lf, %f seconds\n", NUM_THREADS, sum, timer); 
 	return EXIT_SUCCESS;
 }
 

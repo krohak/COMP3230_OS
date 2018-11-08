@@ -8,28 +8,28 @@ else
 	CFLAGS += #-O3
 endif
 
-hello: hello.c
+hello.o: hello.c
 	$(CC) $(CFLAGS) $? -o $@
 
-cal_sum: cal_sum.c
+cal_sum.o: cal_sum.c
 	$(CC) $(CFLAGS) $? -o $@
 
-cal_pi: cal_pi.c
+pi_answer.o: pi_answer.c
 	$(CC) $(CFLAGS) $? -o $@
 
-fix_counter: fix_counter.c
+fix_counter.o: fix_counter.c
 	$(CC) $(CFLAGS) $? -o $@
 
-fix_counter_wrong_answer: fix_counter_wrong_answer.c
+fix_counter_wrong_answer.o: fix_counter_wrong_answer.c
 	$(CC) $(CFLAGS) $? -o $@
 
-pi: pi.c
+pi.o: pi.c
 	$(CC) $(CFLAGS) $? -o $@
 
-semaphore_binary: semaphore_binary.c
+semaphore_binary.o: semaphore_binary.c
 	$(CC) $(CFLAGS) $? -o $@
 
-semaphore: semaphore.c
+semaphore.o: semaphore.c
 	$(CC) $(CFLAGS) $? -o $@
 
 clean:
