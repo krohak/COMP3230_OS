@@ -23,6 +23,9 @@ fix_counter.o: fix_counter.c
 fix_counter_wrong_answer.o: fix_counter_wrong_answer.c
 	$(CC) $(CFLAGS) $? -o $@
 
+fix_counter_answer.o: fix_counter_answer.c
+	$(CC) $(CFLAGS) $? -o $@
+
 pi.o: pi.c
 	$(CC) $(CFLAGS) $? -o $@
 
