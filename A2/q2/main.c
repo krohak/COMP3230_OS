@@ -46,32 +46,44 @@ int main(int argc, char** argv)
 	initResourcePack(rpack, num_spaces, num_workers);
 
 	// prepare work_pack
-	work_pack wpack; 
-	wpack.resource = rpack;
-	wpack.tid = 0;
+	work_pack wpack[num_workers]; 
+
+	// thread objects
+	pthread_t thr[num_workers];
 
 	// Start working and time the whole process
-	int i;
+	int i, rc;
 	double production_time = omp_get_wtime();
 
 	// 8 production tasks to be done and their job ID is from 0 to 7
 	for(i = 0; i < 8; i++) { 
 
-		wpack.jid = i;
+		wpack[i].resource = rpack;
+		wpack[i].tid = i;
+		wpack[i].jid = i;
 
-		printf("-----Main: worker %d doing %d...\n", wpack.tid, wpack.jid);
+		printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
 		
 		if ( i == WINDOW)
-			wpack.times = 7;
+			wpack[i].times = 7;
 		else if(i == TIRE)
-			wpack.times = 4;
+			wpack[i].times = 4;
 		else
-			wpack.times = 1;
+			wpack[i].times = 1;
 
 		// start thread here
-		work(&wpack);
+		if ((rc = pthread_create(&thr[i], NULL, work, &wpack[i]))) {
+			fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+			return EXIT_FAILURE;
+		}
 
 	}
+
+	/* block until all threads complete */
+	for (i = 0; i < 8; i++) {
+		pthread_join(thr[i], NULL);
+	}
+
 	production_time = omp_get_wtime() - production_time;
 	reportResults(production_time);
 

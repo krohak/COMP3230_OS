@@ -1,6 +1,6 @@
 #include "worker.h"
 
-void work(work_pack *arg) {
+void * work(work_pack *arg) {
 	work_pack *wpack = (work_pack *)arg;
 	int tid = wpack->tid;
 	int jid = wpack->jid; 
@@ -19,6 +19,8 @@ void work(work_pack *arg) {
 
 	int num_workers = pack->num_workers;
 	sem_t *sem_worker   = pack->sem_worker;   
+
+	sem_wait(sem_worker);
 
 #if DEBUG
 	printf("Worker[%d]: working on job %d for %d %s...\n", 
@@ -86,4 +88,8 @@ void work(work_pack *arg) {
 #if DEBUG
 	printf("Worker[%d]: job %d done!\n", tid, jid);
 #endif
+
+	sem_post(sem_worker);
+	pthread_exit(NULL);
+
 }
