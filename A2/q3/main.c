@@ -19,23 +19,27 @@ int num_cars;
 int num_spaces;
 int num_workers;
 
+#define WORK_GROUP  8
+
 int main(int argc, char** argv)
-{
-	/*---------- For future use-------
-	  if (argc < 4) {
-	  printf("Usage: %s <number of cars> <number of spaces> <number of workers>\n", 
-	  argv[0]);
-	  return EXIT_SUCCESS;
-	  }
-	  num_cars     = atoi(argv[1]);
-	  num_spaces   = atoi(argv[2]);
-	  num_workers  = atoi(argv[3]);
-	  --------------------------------*/
+{	
+	printf("Name: Rohak Singhal\tUID: 3035242475\n");
+
+	if (argc < 4) {
+	printf("Usage: %s <number of cars> <number of spaces> <number of workers>\n", 
+	argv[0]);
+	return EXIT_SUCCESS;
+	}
+	num_cars     = atoi(argv[1]);
+	num_spaces   = atoi(argv[2]);
+	num_workers  = atoi(argv[3]);
+
 
 	// We only make one car with 1 thread and sufficient storage spaces
-	num_cars     = 1; 
-	num_spaces   = 20;
-	num_workers  = 1;
+	// num_cars     = 4; 
+	// num_spaces   = 40;
+	// num_workers  = 32;
+
 	printf("Job defined, %d workers will build %d cars with %d storage spaces\n",
 			num_workers, num_cars, num_spaces);
 
@@ -45,27 +49,52 @@ int main(int argc, char** argv)
 	initResourcePack(rpack, num_spaces, num_workers);
 
 	// prepare work_pack
-	work_pack wpack; 
-	wpack.resource = rpack;
-	wpack.tid = 0;
+	work_pack wpack[num_workers]; 
+
+	// thread objects
+	pthread_t thr[num_workers];
 
 	// Start working and time the whole process
-	int i;
+	int i, rc;
 	double production_time = omp_get_wtime();
-	// 8 production tasks to be done and their job ID is from 0 to 7
-	for(i = 0; i < 8; i++) { 
-		// Assign job ID to wpack.jid
-		printf("-----Main: worker %d doing %d...\n", wpack.tid, wpack.jid);
-		// We need 7 windows and 4 tires to make a car,
 
-		// when i equal to WINDOW and TIRE we need to set wpack.times to
+	for(int car = 0; car < ((num_cars * WORK_GROUP) / num_workers); car++){
 
-		// 7 and 4 respectively. Otherwise set times to 1
+		// threads (num_workers)
+		for(i = 0; i < num_workers; i++) { 
 
-		// Call work function and pass the pointer of wpack as parameter
+			int j = i % WORK_GROUP;
+			
+			wpack[i].resource = rpack;
+			wpack[i].tid = i;
+			wpack[i].jid = j;
 
+			// printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
+			
+			if ( j == WINDOW)
+				wpack[i].times = 7;
+			else if(j == TIRE)
+				wpack[i].times = 4;
+			else
+				wpack[i].times = 1;
 
+			// start thread here
+			if ((rc = pthread_create(&thr[i], NULL, work, &wpack[i]))) {
+				fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+				return EXIT_FAILURE;
+			}
+
+		}
+
+		/* block until all threads complete */
+		for (i = 0; i < num_workers; i++) {
+			pthread_join(thr[i], NULL);
+		}
+		
 	}
+
+
+
 	production_time = omp_get_wtime() - production_time;
 	reportResults(production_time);
 
@@ -95,7 +124,7 @@ void reportResults(double production_time) {
 
 	sem_getvalue(&sem_space, sem_value);
 	if (*sem_value < num_spaces) {
-		printf("There are waste car parts!\n");
+		printf("There are waste car parts: %d!\n", *sem_value);
 	}
 	sem_getvalue(&sem_car, sem_value);
 	printf("Production of %d %s done, production time: %f sec, space usage: %d\n", 

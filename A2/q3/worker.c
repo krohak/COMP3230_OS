@@ -1,6 +1,6 @@
 #include "worker.h"
 
-void work(work_pack *arg) {
+void* work(work_pack *arg) {
 	work_pack *wpack = (work_pack *)arg;
 	int tid = wpack->tid;
 	int jid = wpack->jid; 
@@ -17,9 +17,10 @@ void work(work_pack *arg) {
 	sem_t *sem_battery  = pack->sem_battery; 
 	sem_t *sem_car      = pack->sem_car;
 
-	// We don't need these 2 veriables as there's only 1 worker in q1
-//	int num_workers = pack->num_workers;
-//	sem_t *sem_worker   = pack->sem_worker;   
+	int num_workers = pack->num_workers;
+	sem_t *sem_worker   = pack->sem_worker;   
+
+	sem_wait(sem_worker);
 
 #if DEBUG
 	printf("Worker[%d]: working on job %d for %d %s...\n", 
@@ -87,4 +88,8 @@ void work(work_pack *arg) {
 #if DEBUG
 	printf("Worker[%d]: job %d done!\n", tid, jid);
 #endif
+
+	sem_post(sem_worker);
+	pthread_exit(NULL);
+
 }
