@@ -17,9 +17,8 @@ void work(work_pack *arg) {
 	sem_t *sem_battery  = pack->sem_battery; 
 	sem_t *sem_car      = pack->sem_car;
 
-	// We don't need these 2 veriables as there's only 1 worker in q1
-//	int num_workers = pack->num_workers;
-//	sem_t *sem_worker   = pack->sem_worker;   
+	int num_workers = pack->num_workers;
+	sem_t *sem_worker   = pack->sem_worker;   
 
 #if DEBUG
 	printf("Worker[%d]: working on job %d for %d %s...\n", 

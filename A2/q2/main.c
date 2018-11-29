@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	// We only make one car with 1 thread and sufficient storage spaces
 	num_cars     = 1; 
 	num_spaces   = 20;
-	num_workers  = 1;
+	num_workers  = 8;
 	printf("Job defined, %d workers will build %d cars with %d storage spaces\n",
 			num_workers, num_cars, num_spaces);
 
@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 		else
 			wpack.times = 1;
 
+		// start thread here
 		work(&wpack);
 
 	}
