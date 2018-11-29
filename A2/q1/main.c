@@ -20,7 +20,9 @@ int num_spaces;
 int num_workers;
 
 int main(int argc, char** argv)
-{
+{	
+	printf("Name: Rohak Singhal\tUID: 3035242475\n");
+
 	/*---------- For future use-------
 	  if (argc < 4) {
 	  printf("Usage: %s <number of cars> <number of spaces> <number of workers>\n", 
@@ -52,18 +54,26 @@ int main(int argc, char** argv)
 	// Start working and time the whole process
 	int i;
 	double production_time = omp_get_wtime();
+
 	// 8 production tasks to be done and their job ID is from 0 to 7
 	for(i = 0; i < 8; i++) { 
 		// Assign job ID to wpack.jid
+		wpack.jid = i;
+
 		printf("-----Main: worker %d doing %d...\n", wpack.tid, wpack.jid);
 		// We need 7 windows and 4 tires to make a car,
-
 		// when i equal to WINDOW and TIRE we need to set wpack.times to
-
 		// 7 and 4 respectively. Otherwise set times to 1
+		
+		if ( i == WINDOW)
+			wpack.times = 7;
+		else if(i == TIRE)
+			wpack.times = 4;
+		else
+			wpack.times = 1;
 
 		// Call work function and pass the pointer of wpack as parameter
-
+		work(&wpack);
 
 	}
 	production_time = omp_get_wtime() - production_time;
@@ -95,7 +105,7 @@ void reportResults(double production_time) {
 
 	sem_getvalue(&sem_space, sem_value);
 	if (*sem_value < num_spaces) {
-		printf("There are waste car parts!\n");
+		printf("There are waste car parts: %d!\n", *sem_value);
 	}
 	sem_getvalue(&sem_car, sem_value);
 	printf("Production of %d %s done, production time: %f sec, space usage: %d\n", 
