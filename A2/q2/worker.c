@@ -1,6 +1,6 @@
 #include "worker.h"
 
-void * work(work_pack *arg) {
+void* work(work_pack *arg) {
 	work_pack *wpack = (work_pack *)arg;
 	int tid = wpack->tid;
 	int jid = wpack->jid; 
