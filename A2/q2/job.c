@@ -80,8 +80,7 @@ void makeTire(sem_t *sem_space, sem_t *sem_tire) {
 }
 
 void makeBattery(sem_t *sem_space, sem_t *sem_battery ) {
-	// call makeItem and pass in the time for makeing battery
-	
+	makeItem(sem_space, TIME_BATTERY, sem_battery);
 }
 
 void makeBody(sem_t *sem_space, int space_limit, sem_t *sem_body,
@@ -95,17 +94,21 @@ void makeBody(sem_t *sem_space, int space_limit, sem_t *sem_body,
 void makeCar(sem_t *sem_space, int space_limit, sem_t *sem_car,
 		sem_t *sem_window, sem_t *sem_tire, sem_t *sem_battery, sem_t *sem_body) {
 	int i;
-	// call getItem 7 times to get 7 windows
-	
-	// call getItem 4 times to get 4 tires
 
-	// call getItem to get a battery pack
+	for(i=0; i<7; i++){
+		getItem(sem_space, space_limit, sem_window);
+	}
 
-	// call getItem to get a car body
+	for(i=0; i<4; i++){
+		getItem(sem_space, space_limit, sem_tire);
+	}
 
-	// make the car
+	getItem(sem_space, space_limit, sem_battery);
 
-	// notify the completion of making a car by post to sem_car
+	getItem(sem_space, space_limit, sem_body);
 
+	makeItem(sem_space, TIME_CAR, sem_car);
+
+	sem_post(sem_space);
 }
 
