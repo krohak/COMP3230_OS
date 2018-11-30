@@ -2,3 +2,4 @@
 *.out
 doTasks
 *.pdf
+.ipynb_checkpoints/
