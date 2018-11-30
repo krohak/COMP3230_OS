@@ -50,7 +50,7 @@ void releaseSpace(sem_t *space, int space_limit) {
 
 void makeItem(sem_t *space, int makeTime, sem_t* item) {
 	requestSpace(space);
-	sleep(makeTime);
+	// sleep(makeTime);
 	sem_post(item);
 }
 
@@ -95,6 +95,8 @@ void makeCar(sem_t *sem_space, int space_limit, sem_t *sem_car,
 		sem_t *sem_window, sem_t *sem_tire, sem_t *sem_battery, sem_t *sem_body) {
 	int i;
 
+	getItem(sem_space, space_limit, sem_body);
+
 	for(i=0; i<7; i++){
 		getItem(sem_space, space_limit, sem_window);
 	}
@@ -104,8 +106,6 @@ void makeCar(sem_t *sem_space, int space_limit, sem_t *sem_car,
 	}
 
 	getItem(sem_space, space_limit, sem_battery);
-
-	getItem(sem_space, space_limit, sem_body);
 
 	makeItem(sem_space, TIME_CAR, sem_car);
 

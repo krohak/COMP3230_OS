@@ -20,6 +20,7 @@ int num_spaces;
 int num_workers;
 
 #define WORK_GROUP  8
+int job_order[] = {3, 0, 1, 2, 7, 4, 5, 6};
 
 int main(int argc, char** argv)
 {	
@@ -74,13 +75,13 @@ int main(int argc, char** argv)
 			
 			wpack[i].resource = rpack;
 			wpack[i].tid = i;
-			wpack[i].jid = j;
+			wpack[i].jid = job_order[j];
 
 			// printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
 			
-			if (j == WINDOW)
+			if (job_order[j] == WINDOW)
 				wpack[i].times = 7;
-			else if (j == TIRE)
+			else if (job_order[j] == TIRE)
 				wpack[i].times = 4;
 			else
 				wpack[i].times = 1;

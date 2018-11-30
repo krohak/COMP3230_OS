@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <math.h>
-#define DEBUG 0
+#define DEBUG 1
 
 
 /*---------Do Not Change Anything Below This Line---------*/
