@@ -55,15 +55,22 @@ int main(int argc, char** argv)
 	pthread_t thr[num_workers];
 
 	// Start working and time the whole process
-	int i, rc;
 	double production_time = omp_get_wtime();
 
-	for(int car = 0; car < ceil( num_cars *  WORK_GROUP / (double) num_workers); car++){
+	for(int t_group = 0; t_group < ceil( num_cars *  WORK_GROUP / (double) num_workers); t_group++){
 
-		// threads (num_workers)
-		for(i = 0; i < num_workers; i++) { 
+		int num_threads;
 
-			int j = i % WORK_GROUP;
+		if ( ( (t_group+1) * num_workers) > (num_cars *  WORK_GROUP) )
+			num_threads = (num_cars *  WORK_GROUP) % num_workers;
+		else
+			num_threads = num_workers;
+
+		// threads 
+		for (int t = t_group*num_workers; t < (t_group*num_workers)+num_threads; t++) { 
+			
+			int i = t % num_workers;
+			int j = t % WORK_GROUP;
 			
 			wpack[i].resource = rpack;
 			wpack[i].tid = i;
@@ -79,7 +86,8 @@ int main(int argc, char** argv)
 				wpack[i].times = 1;
 
 			// start thread here
-			if ((rc = pthread_create(&thr[i], NULL, work, &wpack[i]))) {
+			int rc; 
+			if (( rc = pthread_create(&thr[i], NULL, work, &wpack[i]))) {
 				fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
 				return EXIT_FAILURE;
 			}
@@ -87,7 +95,8 @@ int main(int argc, char** argv)
 		}
 
 		/* block until all threads complete */
-		for (i = 0; i < num_workers; i++) {
+		for (int t = t_group*num_workers; t < (t_group*num_workers)+num_threads; t++) {
+			int i = t % num_threads;
 			pthread_join(thr[i], NULL);
 		}
 		
