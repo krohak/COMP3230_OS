@@ -44,6 +44,9 @@ int main(int argc, char** argv)
 			num_workers, num_cars, num_spaces);
 
 
+	// in the worst case ordering of jobs, we need
+	// at least 16 separate spaces to avoid deadlock
+	// (sum of all individual parts)
 	if (num_spaces < 16){
 		deadlockProgram();
 	}
