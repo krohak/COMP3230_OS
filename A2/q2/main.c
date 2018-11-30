@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	int i, rc;
 	double production_time = omp_get_wtime();
 
-	for(int car = 0; car < ceil( num_cars *  WORK_GROUP / (double) num_workers); car++){
+	for(int t_group = 0; t_group < ceil( num_cars *  WORK_GROUP / (double) num_workers); t_group++){
 
 		// threads (num_workers)
 		for(i = 0; i < num_workers; i++) { 
