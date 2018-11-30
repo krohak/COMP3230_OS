@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	int i, rc;
 	double production_time = omp_get_wtime();
 
-	for(int car = 0; car < ((num_cars * WORK_GROUP) / num_workers); car++){
+	for(int car = 0; car < ceil( num_cars *  WORK_GROUP / (double) num_workers); car++){
 
 		// threads (num_workers)
 		for(i = 0; i < num_workers; i++) { 
@@ -69,11 +69,11 @@ int main(int argc, char** argv)
 			wpack[i].tid = i;
 			wpack[i].jid = j;
 
-			// printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
+			printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
 			
-			if ( j == WINDOW)
+			if (j == WINDOW)
 				wpack[i].times = 7;
-			else if(j == TIRE)
+			else if (j == TIRE)
 				wpack[i].times = 4;
 			else
 				wpack[i].times = 1;
