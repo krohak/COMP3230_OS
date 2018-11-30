@@ -1,6 +1,6 @@
 #include "worker.h"
 
-void* work(work_pack *arg) {
+void* work(void *arg) {
 	work_pack *wpack = (work_pack *)arg;
 	int tid = wpack->tid;
 	int jid = wpack->jid; 
@@ -17,7 +17,7 @@ void* work(work_pack *arg) {
 	sem_t *sem_battery  = pack->sem_battery; 
 	sem_t *sem_car      = pack->sem_car;
 
-	int num_workers = pack->num_workers;
+	// int num_workers = pack->num_workers;
 	sem_t *sem_worker   = pack->sem_worker;   
 
 	sem_wait(sem_worker);

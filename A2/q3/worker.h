@@ -26,4 +26,4 @@ typedef struct work_pack {
 
 
 
-void* work(work_pack *arg);
+void* work(void *arg);
