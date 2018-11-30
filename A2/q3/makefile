@@ -19,3 +19,4 @@ job.o: definitions.h job.h job.c
 
 clean:
 	rm *.o *.out
+	clear
