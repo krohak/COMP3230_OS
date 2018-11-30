@@ -50,7 +50,7 @@ void releaseSpace(sem_t *space, int space_limit) {
 
 void makeItem(sem_t *space, int makeTime, sem_t* item) {
 	requestSpace(space);
-	// sleep(makeTime);
+	sleep(makeTime);
 	sem_post(item);
 }
 

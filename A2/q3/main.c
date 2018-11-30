@@ -20,7 +20,6 @@ int num_spaces;
 int num_workers;
 
 #define WORK_GROUP  8
-int job_order[] = {3, 0, 1, 2, 7, 4, 5, 6};
 
 int main(int argc, char** argv)
 {	
@@ -129,6 +128,8 @@ void basicProgram(){
 
 void deadlockProgram(){
 
+	int job_order[] = {3, 0, 1, 2, 7, 4, 5, 6};
+	
 	resource_pack *rpack = (struct resource_pack*) malloc(sizeof(struct resource_pack));
 
 	// put semaphores into resource_pack
