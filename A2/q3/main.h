@@ -5,4 +5,5 @@ int destroySem();
 void initResourcePack(struct resource_pack *pack,
 		int space_limit, int num_workers);
 void reportResults();
-
+void basicProgram();
+void deadlockProgram();

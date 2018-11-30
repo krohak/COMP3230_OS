@@ -37,13 +37,28 @@ int main(int argc, char** argv)
 
 
 	// We only make one car with 1 thread and sufficient storage spaces
-	// num_cars     = 4; 
-	// num_spaces   = 40;
-	// num_workers  = 32;
+	// num_cars     = 1; 
+	// num_spaces   = 1;
+	// num_workers  = 8;
 
 	printf("Job defined, %d workers will build %d cars with %d storage spaces\n",
 			num_workers, num_cars, num_spaces);
 
+
+	if (num_spaces < 16){
+		deadlockProgram();
+	}
+
+	else{
+		basicProgram();
+	}
+
+	return EXIT_SUCCESS;
+}
+
+
+void basicProgram(){
+	
 	resource_pack *rpack = (struct resource_pack*) malloc(sizeof(struct resource_pack));
 
 	// put semaphores into resource_pack
@@ -75,13 +90,13 @@ int main(int argc, char** argv)
 			
 			wpack[i].resource = rpack;
 			wpack[i].tid = i;
-			wpack[i].jid = job_order[j];
+			wpack[i].jid = j;
 
 			// printf("-----Main: worker %d doing %d...\n", wpack[i].tid, wpack[i].jid);
 			
-			if (job_order[j] == WINDOW)
+			if (j == WINDOW)
 				wpack[i].times = 7;
-			else if (job_order[j] == TIRE)
+			else if (j == TIRE)
 				wpack[i].times = 4;
 			else
 				wpack[i].times = 1;
@@ -90,7 +105,7 @@ int main(int argc, char** argv)
 			int rc; 
 			if (( rc = pthread_create(&thr[i], NULL, work, &wpack[i]))) {
 				fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
-				return EXIT_FAILURE;
+				return;
 			}
 
 		}
@@ -110,8 +125,99 @@ int main(int argc, char** argv)
 
 	destroySem();
 	free(rpack);
-	return EXIT_SUCCESS;
 }
+
+void deadlockProgram(){
+
+	resource_pack *rpack = (struct resource_pack*) malloc(sizeof(struct resource_pack));
+
+	// put semaphores into resource_pack
+	initResourcePack(rpack, num_spaces, num_workers);
+
+	// prepare work_pack
+	work_pack wpack[WORK_GROUP]; 
+
+	// thread objects
+	pthread_t thr[2];
+
+	// Start working and time the whole process
+	double production_time = omp_get_wtime();
+
+	// prepare workpacks
+	for (int i=0; i<WORK_GROUP; i++){
+		
+		wpack[i].resource = rpack;
+		wpack[i].jid = job_order[i];
+
+		if (job_order[i] == WINDOW)
+			wpack[i].times = 7;
+		else if (job_order[i] == TIRE)
+			wpack[i].times = 4;
+		else
+			wpack[i].times = 1;
+	}
+
+	int rc; 
+
+	for (int car = 0; car < num_cars; car++){
+
+		// do job 3 first using a thread, wpack[0]
+		wpack[0].tid = 0;
+		if (( rc = pthread_create(&thr[0], NULL, work, &wpack[0]))) {
+			fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+			return;
+		}
+
+		// do job 0,1,2 using the remaining threads
+		for (int i = 1; i < 4; i++){
+
+			wpack[i].tid = 1;
+			if (( rc = pthread_create(&thr[1], NULL, work, &wpack[i]))) {
+				fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+				return;
+			}
+			
+			// join 
+			pthread_join(thr[1], NULL);
+		}
+
+		// join job 3
+		pthread_join(thr[0], NULL);
+
+
+		// do job 7 first using a thread, wpack[4]
+		wpack[4].tid = 0;
+		if (( rc = pthread_create(&thr[0], NULL, work, &wpack[4]))) {
+			fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+			return;
+		}
+
+
+		// do job 4,5,6 using the remaining threads
+		for (int i = 5; i < 8; i++){
+
+			wpack[i].tid = 1;
+			if (( rc = pthread_create(&thr[1], NULL, work, &wpack[i]))) {
+				fprintf(stderr, "error: pthread_create, rc: %d\n", rc);
+				return;
+			}
+			
+			// join 
+			pthread_join(thr[1], NULL);
+		}
+
+		
+		// join 7
+		pthread_join(thr[0], NULL);
+	}
+
+	production_time = omp_get_wtime() - production_time;
+	reportResults(production_time);
+
+	destroySem();
+	free(rpack);
+}
+
 
 void reportResults(double production_time) {
 	int *sem_value = malloc(sizeof(int));

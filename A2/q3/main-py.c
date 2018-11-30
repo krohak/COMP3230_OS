@@ -23,7 +23,7 @@ int num_workers;
 
 int main(int argc, char** argv)
 {	
-	printf("Name: Rohak Singhal\tUID: 3035242475\n");
+	// printf("Name: Rohak Singhal\tUID: 3035242475\n");
 
 	if (argc < 4) {
 	printf("Usage: %s <number of cars> <number of spaces> <number of workers>\n", 
@@ -40,8 +40,8 @@ int main(int argc, char** argv)
 	// num_spaces   = 40;
 	// num_workers  = 32;
 
-	printf("Job defined, %d workers will build %d cars with %d storage spaces\n",
-			num_workers, num_cars, num_spaces);
+	// printf("Job defined, %d workers will build %d cars with %d storage spaces\n",
+	// 		num_workers, num_cars, num_spaces);
 
 	resource_pack *rpack = (struct resource_pack*) malloc(sizeof(struct resource_pack));
 
@@ -105,7 +105,8 @@ int main(int argc, char** argv)
 
 
 	production_time = omp_get_wtime() - production_time;
-	reportResults(production_time);
+	// reportResults(production_time);
+	printf("%f\n",production_time);
 
 	destroySem();
 	free(rpack);
