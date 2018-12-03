@@ -6,7 +6,7 @@ CFLAGS = -Wall -fopenmp -pthread -lm
 all: tesla_factory.out
 
 tesla_factory.out: $(OBJS)  
-	$(CC) $(CFLAGS) $(OBJS) -o tesla_factory.out
+	$(CC) $(CFLAGS) $(OBJS) -o tesla_factory.out -lm
 
 main.o: definitions.h main.h main.c
 	$(CC) $(CFLAGS) -c main.c

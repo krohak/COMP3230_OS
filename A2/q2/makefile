@@ -1,12 +1,12 @@
 OBJS = main.o job.o worker.o
 CC = gcc
 DEBUG = -g
-CFLAGS = -Wall -fopenmp -pthread -lm
+CFLAGS = -Wall -fopenmp -pthread
 
 all: tesla_factory.out
 
 tesla_factory.out: $(OBJS)  
-	$(CC) $(CFLAGS) $(OBJS) -o tesla_factory.out
+	$(CC) $(CFLAGS) $(OBJS) -o tesla_factory.out -lm
 
 main.o: definitions.h main.h main.c
 	$(CC) $(CFLAGS) -c main.c
@@ -19,3 +19,4 @@ job.o: definitions.h job.h job.c
 
 clean:
 	rm *.o *.out
+	clear
